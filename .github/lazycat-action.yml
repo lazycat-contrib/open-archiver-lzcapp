@@ -10,7 +10,7 @@ update:
   allow_downgrade: false
   version_source:
     type: image
-    image: logiclabshq/open-archiver
+    image: open-archiver
 build:
   toolchains: []
   run_buildscript: false

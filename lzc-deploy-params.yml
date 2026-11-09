@@ -1,0 +1,65 @@
+params:
+  - id: oa_pg_pass_x8kd
+    type: secret
+    name: "数据库密码"
+    description: "PostgreSQL 数据库密码（已预置随机值，应用自动使用）"
+    default_value: "kT2wVb9nRm4sQe7y"
+    optional: false
+  - id: oa_redis_pass_x8kd
+    type: secret
+    name: "缓存密码"
+    description: "Valkey/Redis 缓存密码（已预置随机值，应用自动使用）"
+    default_value: "hN6jFz3pLd8wAx5c"
+    optional: false
+  - id: oa_meili_key_x8kd
+    type: secret
+    name: "搜索主密钥"
+    description: "Meilisearch 主密钥（已预置随机值，应用自动使用）"
+    default_value: "Wq9xEt5vGy2nJu6bKc3sPz7dRm4fAh8t"
+    optional: false
+  - id: oa_jwt_secret_x8kd
+    type: secret
+    name: "JWT 密钥"
+    description: "登录令牌签名密钥（已预置随机值）"
+    default_value: "Zb4nKq7wXm2tVy9cRd6sFp3aGu8eHj5t"
+    optional: false
+  - id: oa_enc_key_x8kd
+    type: secret
+    name: "数据加密密钥"
+    description: "敏感数据（如邮箱凭据）的 32 字节十六进制加密密钥（已预置随机值）"
+    default_value: "e7c3f9a1d5b84c62f0a8e3d1b6c94f27a5d8e1c3f7b2a9d6c4e8f1a3b5d7c9e2"
+    optional: false
+
+locales:
+  zh:
+    oa_pg_pass_x8kd:
+      name: "数据库密码"
+      description: "PostgreSQL 数据库密码（已预置随机值，应用自动使用）"
+    oa_redis_pass_x8kd:
+      name: "缓存密码"
+      description: "Valkey/Redis 缓存密码（已预置随机值，应用自动使用）"
+    oa_meili_key_x8kd:
+      name: "搜索主密钥"
+      description: "Meilisearch 主密钥（已预置随机值，应用自动使用）"
+    oa_jwt_secret_x8kd:
+      name: "JWT 密钥"
+      description: "登录令牌签名密钥（已预置随机值）"
+    oa_enc_key_x8kd:
+      name: "数据加密密钥"
+      description: "敏感数据（如邮箱凭据）的加密密钥（已预置随机值）"
+  en:
+    oa_pg_pass_x8kd:
+      name: "Database password"
+      description: "PostgreSQL database password (pre-filled with a random value)"
+    oa_redis_pass_x8kd:
+      name: "Cache password"
+      description: "Valkey/Redis cache password (pre-filled with a random value)"
+    oa_meili_key_x8kd:
+      name: "Meilisearch master key"
+      description: "Meilisearch master key (pre-filled with a random value)"
+    oa_jwt_secret_x8kd:
+      name: "JWT secret"
+      description: "JWT signing secret (pre-filled with a random value)"
+    oa_enc_key_x8kd:
+      name: "Encryption key"
+      description: "32-byte hex key for encrypting sensitive data (pre-filled with a random value)"

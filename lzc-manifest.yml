@@ -1,0 +1,98 @@
+application:
+  subdomain: open-archiver
+  multi_instance: false
+  # First admin is created via the web /setup page (no email verification) ->
+  # public_path (papra/servas precedent).
+  public_path:
+    - /
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://open-archiver:3000/
+services:
+  open-archiver:
+    # upstream: logiclabshq/open-archiver:v0.6.2
+    image: docker.1ms.run/logiclabshq/open-archiver:v0.6.2
+    environment:
+      - NODE_ENV=production
+      - PORT_BACKEND=4000
+      - PORT_FRONTEND=3000
+      - APP_URL=https://{{.S.AppDomain}}
+      - ORIGIN=https://{{.S.AppDomain}}
+      - SYNC_FREQUENCY=* * * * *
+      - DATABASE_URL=postgresql://openarchiver:{{ .U.oa_pg_pass_x8kd }}@postgres:5432/open_archive
+      - POSTGRES_DB=open_archive
+      - POSTGRES_USER=openarchiver
+      - POSTGRES_PASSWORD={{ .U.oa_pg_pass_x8kd }}
+      - MEILI_MASTER_KEY={{ .U.oa_meili_key_x8kd }}
+      - MEILI_HOST=http://meilisearch:7700
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD={{ .U.oa_redis_pass_x8kd }}
+      - REDIS_TLS_ENABLED=false
+      - STORAGE_TYPE=local
+      - STORAGE_LOCAL_ROOT_PATH=/var/data/open-archiver
+      - JWT_SECRET={{ .U.oa_jwt_secret_x8kd }}
+      - JWT_EXPIRES_IN=7d
+      - ENCRYPTION_KEY={{ .U.oa_enc_key_x8kd }}
+      - TIKA_URL=http://tika:9998
+      - BODY_SIZE_LIMIT=100M
+      - TZ=Asia/Shanghai
+    depends_on:
+      - postgres
+      - valkey
+      - meilisearch
+      - tika
+    binds:
+      - /lzcapp/var/mutdata/archiver:/var/data/open-archiver
+  postgres:
+    # upstream: library/postgres:17.11
+    image: docker.1ms.run/library/postgres:17.11
+    environment:
+      - POSTGRES_DB=open_archive
+      - POSTGRES_USER=openarchiver
+      - POSTGRES_PASSWORD={{ .U.oa_pg_pass_x8kd }}
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/mutdata/pgdata:/var/lib/postgresql/data
+  valkey:
+    # upstream: valkey/valkey:8.1.11 (internal network only)
+    image: docker.1ms.run/valkey/valkey:8.1.11
+    command: valkey-server --requirepass {{ .U.oa_redis_pass_x8kd }}
+    environment:
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/mutdata/valkey:/data
+  meilisearch:
+    # upstream: getmeili/meilisearch:v1.38
+    image: docker.1ms.run/getmeili/meilisearch:v1.38
+    environment:
+      - MEILI_MASTER_KEY={{ .U.oa_meili_key_x8kd }}
+      - MEILI_SCHEDULE_SNAPSHOT=86400
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/mutdata/meili:/meili_data
+  tika:
+    # upstream: apache/tika:4.1.0-full
+    image: docker.1ms.run/apache/tika:4.1.0-full
+    environment:
+      - TZ=Asia/Shanghai
+usage: |
+  OpenArchiver 是开源的合规邮件归档平台（AGPL-3.0），支持 IMAP、Gmail、Outlook
+  邮箱接入及 PST/EML/mbox 文件导入，提供全文检索、审计日志与数据自持。
+
+  使用方法：
+  1. 部署后打开应用，首次访问会跳转到 /setup 页面，按提示创建第一个管理员账号
+     （无需邮件验证，账号创建后 setup 页面即关闭）。
+  2. 登录后在左侧栏添加 Ingestion Sources（IMAP/Gmail/Outlook 或文件上传），
+     邮件会按 SYNC_FREQUENCY（每分钟）自动同步归档。
+  3. 搜索即输即搜（Meilisearch 全文索引）；附件文本由内置 Tika 提取。
+
+  说明：
+  - 首个管理员通过网页 /setup 自助创建，因此开放 public_path，由应用自身登录页
+    鉴权；数据库/缓存/搜索密钥均为部署系统预置的随机值，自动注入，无需手填。
+  - 邮箱等接入凭据在数据库中经 AES-256 加密存储（ENCRYPTION_KEY 已随机预置）。
+  - 应用监听 3000 端口（Web），数据库/缓存/搜索/文档解析均为内部服务，不对外。
+  - 本包未做实机验证，功能以官方文档为准：https://docs.openarchiver.com
+  - 许可证 AGPL-3.0，随包分发，见 /package-licenses/。

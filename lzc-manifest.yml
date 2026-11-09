@@ -57,7 +57,7 @@ services:
     binds:
       - /lzcapp/var/mutdata/pgdata:/var/lib/postgresql/data
   valkey:
-    # upstream: valkey/valkey:8.1.11 (internal network only)
+    # upstream: valkey/valkey:8.1.11
     image: docker.1ms.run/valkey/valkey:8.1.11
     command: valkey-server --requirepass {{ .U.oa_redis_pass_x8kd }}
     environment:
@@ -65,8 +65,8 @@ services:
     binds:
       - /lzcapp/var/mutdata/valkey:/data
   meilisearch:
-    # upstream: getmeili/meilisearch:v1.38
-    image: docker.1ms.run/getmeili/meilisearch:v1.38
+    # upstream: getmeili/meilisearch:v1.56.1
+    image: docker.1ms.run/getmeili/meilisearch:v1.56.1
     environment:
       - MEILI_MASTER_KEY={{ .U.oa_meili_key_x8kd }}
       - MEILI_SCHEDULE_SNAPSHOT=86400
@@ -74,8 +74,8 @@ services:
     binds:
       - /lzcapp/var/mutdata/meili:/meili_data
   tika:
-    # upstream: apache/tika:4.1.0-full
-    image: docker.1ms.run/apache/tika:4.1.0-full
+    # upstream: apache/tika:4.2.0-full
+    image: docker.1ms.run/apache/tika:4.2.0-full
     environment:
       - TZ=Asia/Shanghai
 usage: |
